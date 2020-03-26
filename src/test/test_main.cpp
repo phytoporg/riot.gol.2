@@ -19,10 +19,8 @@ const static std::vector<gol::CellAddress> NeighborAddresses = {
     std::make_pair<int64_t, int64_t>(-1,  0)
 };
 
-//
-// Generate all possible combinations of n neighbors, assuming a cell at (0, 0).
-//
-static void GenerateNeighborCombinations_BacktrackHelper(
+static 
+void GenerateNeighborCombinations_BacktrackHelper(
     std::vector<std::vector<gol::CellAddress>>& combinations,
     std::vector<gol::CellAddress>& candidates,
     size_t n,
@@ -48,7 +46,11 @@ static void GenerateNeighborCombinations_BacktrackHelper(
     }
 }
 
-static std::vector<std::vector<gol::CellAddress>>
+//
+// Generate all possible combinations of n neighbors, assuming a cell at (0, 0).
+//
+static 
+std::vector<std::vector<gol::CellAddress>>
 GenerateNeighborCombinations(size_t n)
 {
     std::vector<std::vector<gol::CellAddress>> combinations;
@@ -66,9 +68,7 @@ GenerateNeighborCombinations(size_t n)
 //
 // Alive -> Dead tests for individual cells
 //
-class CellAliveToDeadFixture :
-    public testing::TestWithParam<size_t> {
-};
+class CellAliveToDeadFixture : public testing::TestWithParam<size_t> {};
 
 TEST_P(CellAliveToDeadFixture, CellAliveToDead_Param)
 {
@@ -99,14 +99,14 @@ TEST_P(CellAliveToDeadFixture, CellAliveToDead_Param)
 
 INSTANTIATE_TEST_CASE_P(CellAliveToDead_Param,
                         CellAliveToDeadFixture,
+                        // Live cells die hard when surrounded by this many 
+                        // neighbors
                         testing::Values(0, 1, 4, 5, 6, 7, 8));
 
 //
 // Alive -> Dead tests for individual cells
 //
-class CellAliveToAliveFixture :
-    public testing::TestWithParam<size_t> {
-};
+class CellAliveToAliveFixture : public testing::TestWithParam<size_t> { };
 
 TEST_P(CellAliveToAliveFixture, CellAliveToAlive_Param)
 {
@@ -138,14 +138,14 @@ TEST_P(CellAliveToAliveFixture, CellAliveToAlive_Param)
 
 INSTANTIATE_TEST_CASE_P(CellAliveToAlive_Param,
                         CellAliveToAliveFixture,
+                        // Live cells remain alive when surrounded by this many 
+                        // neighbors
                         testing::Values(2, 3));
 
 //
 // Dead -> Alive tests for individual cells
 //
-class CellDeadToAliveFixture :
-    public testing::TestWithParam<size_t> {
-};
+class CellDeadToAliveFixture : public testing::TestWithParam<size_t> { };
 
 TEST_P(CellDeadToAliveFixture, CellDeadToAlive_Param)
 {
@@ -175,14 +175,14 @@ TEST_P(CellDeadToAliveFixture, CellDeadToAlive_Param)
 
 INSTANTIATE_TEST_CASE_P(CellDeadToAlive_Param,
                         CellDeadToAliveFixture,
+                        // Dead cells come to life when surrounded by this many 
+                        // neighbors
                         testing::Values(3));
 
 //
 // Dead -> Dead tests for individual cells
 //
-class CellDeadToDeadFixture :
-    public testing::TestWithParam<size_t> {
-};
+class CellDeadToDeadFixture : public testing::TestWithParam<size_t> { };
 
 TEST_P(CellDeadToDeadFixture, CellDeadToDead_Param)
 {
@@ -191,12 +191,6 @@ TEST_P(CellDeadToDeadFixture, CellDeadToDead_Param)
 
     for (auto& liveCells : liveCellCollections)
     {
-        for (const auto& cell : liveCells)
-        {
-            using namespace std;
-            auto it = find(begin(NeighborAddresses), end(NeighborAddresses), cell);
-        }
-
         gol::GOLGrid grid(liveCells);
         grid.AdvanceGeneration();
         
@@ -217,6 +211,8 @@ TEST_P(CellDeadToDeadFixture, CellDeadToDead_Param)
 
 INSTANTIATE_TEST_CASE_P(CellDeadToDead_Param,
                         CellDeadToDeadFixture,
+                        // Dead cells stay dead when surrounded by this many 
+                        // neighbors
                         testing::Values(1, 2, 4, 5, 6, 7, 8));
 
 int main(int argc, char** argv) {
