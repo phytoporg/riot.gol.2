@@ -47,12 +47,7 @@ namespace gol
             //
             for (const auto& Offset : NeighborOffsets)
             {
-                const auto NeighborAddress = 
-                    std::make_pair(
-                            liveAddress.first  + Offset.first,
-                            liveAddress.second + Offset.second
-                        );
-
+                const auto NeighborAddress = liveAddress + Offset;
                 auto neighborCellIt = m_pCurrentStorage->Find(NeighborAddress);
                 if (neighborCellIt != m_pCurrentStorage->end())
                 {
@@ -156,11 +151,7 @@ namespace gol
                 //
                 for (const auto& Offset : NeighborOffsets)
                 {
-                    const auto NeighborAddress = 
-                        std::make_pair(
-                                address.first  + Offset.first,
-                                address.second + Offset.second
-                            );
+                    const auto NeighborAddress = address + Offset;
                     auto neighborIt = m_pNextStorage->Find(NeighborAddress);
                     assert(neighborIt != m_pNextStorage->end());
                     assert(neighborIt->second.State.NeighborCount > 0);
@@ -180,11 +171,7 @@ namespace gol
 
                 for (const auto& Offset : NeighborOffsets)
                 {
-                    const auto NeighborAddress = 
-                        std::make_pair(
-                                address.first  + Offset.first,
-                                address.second + Offset.second
-                            );
+                    const auto NeighborAddress = address + Offset;
                     auto neighborIt = m_pNextStorage->Find(NeighborAddress);
                     if (neighborIt == m_pNextStorage->end())
                     {

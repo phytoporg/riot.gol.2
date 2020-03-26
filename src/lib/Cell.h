@@ -9,7 +9,17 @@
 
 namespace gol
 {
+    //
+    // For address + offset type logic.
+    //
     using CellAddress = std::pair<int64_t, int64_t>;
+    CellAddress operator+(const CellAddress& a, const CellAddress& b)
+    {
+        return std::make_pair<int64_t, int64_t>(
+                a.first + b.first,
+                a.second + b.second
+            );
+    }
 
     struct Cell
     {
