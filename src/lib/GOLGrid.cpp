@@ -5,6 +5,21 @@
 
 namespace
 {
+    //
+    // For address + offset type logic.
+    //
+    gol::CellAddress 
+    operator+(
+        const gol::CellAddress& a,
+        const gol::CellAddress& b
+    )
+    {
+        return std::make_pair<int64_t, int64_t>(
+                a.first + b.first,
+                a.second + b.second
+            );
+    }
+
     static const std::vector<gol::CellAddress> NeighborOffsets = {
         //
         // Neighbor offsets in clockwise order from the upper-left corner.
