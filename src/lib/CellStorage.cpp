@@ -12,6 +12,17 @@ namespace gol
         m_map.insert(std::make_pair(cell.Address, cell));
     }
 
+    void CellStorage::Insert(
+            const CellAddress& address,
+            bool isAlive,
+            uint8_t numNeighbors)
+    {
+        m_map.insert(
+            std::make_pair(
+                address,
+                Cell(address, isAlive, numNeighbors)));
+    }
+
     bool CellStorage::Remove(const CellAddress& address)
     {
         auto it = m_map.find(address);

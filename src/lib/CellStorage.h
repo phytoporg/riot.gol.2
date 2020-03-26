@@ -40,6 +40,10 @@ namespace gol
         // and otherwise clobbers the existing state at the cell address.
         //
         void Insert(const Cell& cell);
+        void Insert(
+            const CellAddress& address,
+            bool isAlive,
+            uint8_t numNeighbors);
 
         //
         // Fails if no cell exists at the provided address.

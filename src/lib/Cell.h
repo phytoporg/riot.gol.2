@@ -13,6 +13,9 @@ namespace gol
 
     struct Cell
     {
+        Cell(const CellAddress& address, bool alive, uint8_t neighborCount)
+            : Address(address), State{alive, neighborCount} {}
+
         CellAddress Address;
 
         //

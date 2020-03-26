@@ -5,23 +5,6 @@
 
 namespace
 {
-    //
-    // Helper function to create new cells from just the address. Just helps
-    // with readability.
-    //
-    gol::Cell CellFromAddress(
-        const gol::CellAddress& address,
-        bool alive,
-        uint8_t neighborCount
-        )
-    {
-        return
-            {
-                address,
-                { alive, neighborCount }
-            };
-    }
-
     static const std::vector<gol::CellAddress> NeighborOffsets = {
         //
         // Neighbor offsets in clockwise order from the upper-left corner.
@@ -49,7 +32,7 @@ namespace gol
         for (const auto& Address : cellAddresses)
         {
             const bool AliveCell{true};
-            m_pCurrentStorage->Insert(CellFromAddress(Address, AliveCell, 0));
+            m_pCurrentStorage->Insert(Address, AliveCell, 0);
         }
 
         //
@@ -98,8 +81,7 @@ namespace gol
                         // it. Defer adding dead cells to storage.
                         //
                         const bool DeadCell{false};
-                        deadCells.push_back(
-                            CellFromAddress(NeighborAddress, DeadCell, 1));
+                        deadCells.emplace_back(NeighborAddress, DeadCell, 1);
                     }
                 }
             }
@@ -211,9 +193,7 @@ namespace gol
                         // with a single neighbor.
                         //
                         const bool DeadCell{false};
-                        m_pNextStorage->Insert(
-                            CellFromAddress(NeighborAddress, DeadCell, 1)
-                        );
+                        m_pNextStorage->Insert(NeighborAddress, DeadCell, 1);
                     }
                     else
                     {
