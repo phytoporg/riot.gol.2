@@ -15,35 +15,20 @@ namespace gol
     {
         CellAddress Address;
 
+        //
+        // May be overkill. Packing these bits into place for an easy state
+        // transition look-up when advancing the generation.
+        //
         struct
         {
-            uint8_t NeighborCount : 4;
-            uint8_t Alive         : 1;
+            uint8_t Alive;
+            uint8_t NeighborCount;
         } State;
-    };
 
-    struct CellCompare
-    {
-        using is_transparent = std::true_type;
-        bool operator()(const Cell& a, const Cell& b) const
+        uint8_t LookupKey() const
         {
-            return a.Address < b.Address;
-        }
-
-        bool operator()(const CellAddress& a, const CellAddress& b) const
-        {
-            return a < b;
-        }
-
-        bool operator()(const CellAddress& a, const Cell& b) const
-        {
-            return a < b.Address;
-        }
-
-        bool operator()(const Cell& a, const CellAddress& b) const
-        {
-            return a.Address < b;
-        }
+            return ((State.Alive << 4) | (State.NeighborCount)) & 0x1F;
+        };
     };
 }
 

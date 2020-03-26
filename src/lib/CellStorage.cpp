@@ -2,31 +2,22 @@
 
 namespace gol
 {
-    bool CellStorage::Find(const CellAddress& address, Cell* pCellOut) const
+    CellStorage::iterator CellStorage::Find(const CellAddress& address)
     {
-        auto it = m_set.find(address);
-        if (it != std::end(m_set))
-        {
-            *pCellOut = *it;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return m_map.find(address);
     }
 
     void CellStorage::Insert(const Cell& cell)
     {
-        m_set.insert(cell);
+        m_map.insert(std::make_pair(cell.Address, cell));
     }
 
     bool CellStorage::Remove(const CellAddress& address)
     {
-        auto it = m_set.find(address);
-        if (it != std::end(m_set))
+        auto it = m_map.find(address);
+        if (it != std::end(m_map))
         {
-            m_set.erase(it);
+            m_map.erase(it);
             return true;
         }
         else

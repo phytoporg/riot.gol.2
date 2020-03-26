@@ -3,8 +3,11 @@ cmake_minimum_required(VERSION 3.11)
 set(CMAKE_CXX_STANDARD 17)
 project(gol2 CXX)
 
-#list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-#enable_testing()
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FetchGTest.cmake)
+include(GoogleTest)
+
+enable_testing()
 
 add_subdirectory(src)

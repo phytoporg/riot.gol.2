@@ -6,7 +6,7 @@
 
 #include "Cell.h"
 
-#include <set>
+#include <map>
 
 namespace gol
 {
@@ -20,16 +20,20 @@ namespace gol
         // Would be nice to templateize the underlying representation or just
         // make this opaque;
         //
-        using ContainerType = std::set<Cell, CellCompare>;
+        using ContainerType = std::map<CellAddress, Cell>;
+        using iterator = ContainerType::iterator;
 
         //
-        // Returns false if no cell exists inside of this container which 
-        // matches the query address. *pCellOut is not modified in this
-        // case.
+        // Returns nullptr if no cell exists inside of this container which 
+        // matches the query address.
         //
-        // On success, *pCellOut contains the retrieved data.
+        // On success, returns retrieved cell address. 
         //
-        bool Find(const CellAddress& address, Cell* pCellOut) const;
+        // *USER BEWARE* the underlying container may not keep this object at 
+        // its current address after modifying the container. Avoid inserting
+        // and removing while relying on the returned value.
+        //
+        iterator Find(const CellAddress& address);
 
         //
         // Inserts a new cell into the container if it doesn't already exist,
@@ -45,12 +49,11 @@ namespace gol
         //
         // Iterator convenience.
         //
-        using iterator = ContainerType::iterator;
-        iterator begin() noexcept { return m_set.begin(); }
-        iterator end()   noexcept { return m_set.end(); }
+        iterator begin() noexcept { return m_map.begin(); }
+        iterator end()   noexcept { return m_map.end(); }
         
     private:
-        ContainerType m_set;
+        ContainerType m_map;
     };
 }
 
