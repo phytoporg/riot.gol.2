@@ -122,7 +122,7 @@ namespace gol
         // High order bit represents current alive state and the remaining
         // bits are the neighbor count.
         //
-        static const std::vector<bool> StateTransitionLUT = 
+        static const std::vector<bool> AliveOrDeadLUT = 
         {
             false, // 0b00000
             false, // 0b00001
@@ -159,7 +159,7 @@ namespace gol
 
         for (auto& [address, cell] : *m_pCurrentStorage)
         {
-            if (cell.State.Alive && !StateTransitionLUT[cell.LookupKey()])
+            if (cell.State.Alive && !AliveOrDeadLUT[cell.LookupKey()])
             {
                 //
                 // Mark this cell as dead in the next state.
@@ -187,7 +187,7 @@ namespace gol
                 }
             }
 
-            if (!cell.State.Alive && StateTransitionLUT[cell.LookupKey()])
+            if (!cell.State.Alive && AliveOrDeadLUT[cell.LookupKey()])
             {
                 //
                 // Mark this cell as alive in the next state.
