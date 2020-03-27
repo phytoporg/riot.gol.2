@@ -25,10 +25,11 @@ namespace gol
         void AdvanceGeneration();
 
         //
-        // Retrieve the live cells for testing, output and debugging. The
-        // returned data results from a deep copy of the internals.
+        // Retrieve cells for testing, output and debugging. The returned data 
+        // results from a deep copy of the internals.
         //
         std::vector<Cell> GetLiveCells() const;
+        std::vector<Cell> GetAllCells() const;
 
     private:
         //

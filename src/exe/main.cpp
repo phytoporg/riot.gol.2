@@ -21,13 +21,23 @@ void PrintUsage(const std::string& progName)
 }
 
 const std::string LifeSignature("#Life 1.06");
-void DumpCells(const std::vector<gol::Cell>& cells, std::ostream& out)
+void DumpCells(
+    const std::vector<gol::Cell>& cells,
+    std::ostream& out,
+    bool debug)
 {
-    out << LifeSignature << "\n";
+    if (!debug) { out << LifeSignature << "\n"; }
 
     for (const auto& Cell : cells)
     {
         out << Cell.Address.first << " " << Cell.Address.second;
+
+        if (debug)
+        {
+            out << " : " << (Cell.State.Alive ? "alive " : "dead ")
+                << "w/"  << static_cast<uint32_t>(Cell.State.NeighborCount)
+                << " neighbors";
+        }
 
         if (&Cell != &cells.back())
         {
@@ -91,10 +101,16 @@ int main(int argc, char** argv)
     gol::GOLGrid grid(initialCells);
     for (uint32_t i = 0; i < numIterations; ++i)
     {
+#if defined(DEBUG)
+        std::cout << "Generation " << i << ":\n";
+        DumpCells(grid.GetAllCells(), std::cout, true);
+#endif
         grid.AdvanceGeneration();
     }
 
-    DumpCells(grid.GetLiveCells(), std::cout);
+#if !defined(DEBUG)
+    DumpCells(grid.GetLiveCells(), std::cout, false);
+#endif
 
     return 0;
 }

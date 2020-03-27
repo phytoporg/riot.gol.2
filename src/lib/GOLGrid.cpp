@@ -222,5 +222,13 @@ namespace gol
 
         return liveCells;
     }
+
+    std::vector<Cell> GOLGrid::GetAllCells() const
+    {
+        std::vector<Cell> cells;
+        for (const auto& [IGNORE, Cell] : m_storage) { cells.push_back(Cell); }
+
+        return cells;
+    }
 }
 
