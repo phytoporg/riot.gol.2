@@ -38,8 +38,6 @@ namespace
 namespace gol
 {
     GOLGrid::GOLGrid(const std::vector<CellAddress>& cellAddresses)
-        : m_pCurrentStorage(&m_pingPongStorage[0]),
-          m_pNextStorage(&m_pingPongStorage[1])
     {
         //
         // Insert live cells
@@ -47,14 +45,14 @@ namespace gol
         for (const auto& Address : cellAddresses)
         {
             const bool AliveCell{true};
-            m_pCurrentStorage->Insert(Address, AliveCell, 0);
+            m_storage.Insert(Address, AliveCell, 0);
         }
 
         //
         // Generate adjacent dead cells and properly set neighbor counts.
         //
         std::vector<Cell> deadCells;
-        for (auto [liveAddress, IGNORE] : *m_pCurrentStorage)
+        for (auto [liveAddress, IGNORE] : m_storage)
         {
             //
             // Check for neighbors. Where there isn't one, create a new,
@@ -63,8 +61,8 @@ namespace gol
             for (const auto& Offset : NeighborOffsets)
             {
                 const auto NeighborAddress = liveAddress + Offset;
-                auto neighborCellIt = m_pCurrentStorage->Find(NeighborAddress);
-                if (neighborCellIt != m_pCurrentStorage->end())
+                auto neighborCellIt = m_storage.Find(NeighborAddress);
+                if (neighborCellIt != m_storage.end())
                 {
                     neighborCellIt->second.State.NeighborCount++;
                 }
@@ -73,7 +71,8 @@ namespace gol
                     //
                     // See if the dead cell exists in the dead cells list.
                     //
-                    auto it = std::find_if(
+                    auto it = 
+                        std::find_if(
                             std::begin(deadCells),
                             std::end(deadCells),
                             [&NeighborAddress](const Cell& cell)
@@ -99,10 +98,8 @@ namespace gol
 
         for (const auto& DeadCell : deadCells)
         {
-            m_pCurrentStorage->Insert(DeadCell);
+            m_storage.Insert(DeadCell);
         }
-
-        *m_pNextStorage = *m_pCurrentStorage;
     }
 
     void GOLGrid::AdvanceGeneration()
@@ -149,73 +146,95 @@ namespace gol
             false, // 0b11000
         };
 
-        for (auto& [address, cell] : *m_pCurrentStorage)
+        //
+        // To update storage in-place, conduct the update in two passes:
+        // 1) Note state transitions for each cell (alive<->dead)
+        // 2) Update transitioning cells' living state and the neighbor count
+        //    of their neighbors.
+        //
+        // Along the way, kill off cells with no neighbors.
+        //
+        std::vector<Cell> changedCells;
+        std::vector<Cell> retiredCells;
+        for (auto& [address, cell] : m_storage)
         {
-            if (cell.State.Alive && !AliveOrDeadLUT[cell.LookupKey()])
-            {
-                //
-                // Mark this cell as dead in the next state.
-                //
-                auto nextIt = m_pNextStorage->Find(address);
-                assert(nextIt != m_pNextStorage->end());
-                nextIt->second.State.Alive = false;
-
-                //
-                // Decrement neighbor count for all adjacent cells in the next
-                // generation.
-                //
-                for (const auto& Offset : NeighborOffsets)
-                {
-                    const auto NeighborAddress = address + Offset;
-                    auto neighborIt = m_pNextStorage->Find(NeighborAddress);
-                    assert(neighborIt != m_pNextStorage->end());
-                    assert(neighborIt->second.State.NeighborCount > 0);
-
-                    neighborIt->second.State.NeighborCount--;
-                }
-            }
-
-            if (!cell.State.Alive && AliveOrDeadLUT[cell.LookupKey()])
-            {
-                //
-                // Mark this cell as alive in the next state.
-                //
-                auto nextIt = m_pNextStorage->Find(address);
-                assert(nextIt != m_pNextStorage->end());
-                nextIt->second.State.Alive = true;
-
-                for (const auto& Offset : NeighborOffsets)
-                {
-                    const auto NeighborAddress = address + Offset;
-                    auto neighborIt = m_pNextStorage->Find(NeighborAddress);
-                    if (neighborIt == m_pNextStorage->end())
-                    {
-                        //
-                        // This address doesn't have a cell. Create a dead cell
-                        // with a single neighbor.
-                        //
-                        const bool DeadCell{false};
-                        m_pNextStorage->Insert(NeighborAddress, DeadCell, 1);
-                    }
-                    else
-                    {
-                        neighborIt->second.State.NeighborCount++;
-                    }
-                }
-            }
-            else if (!cell.State.Alive && cell.State.NeighborCount == 0) 
+            const bool NewState{ AliveOrDeadLUT[cell.LookupKey()] };
+            const bool Transitioned{ cell.State.Alive != NewState };
+            if (Transitioned) 
             { 
-                m_pNextStorage->Remove(address);
+                changedCells.push_back(cell); 
+            }
+            else if (!cell.State.Alive && cell.State.NeighborCount == 0)
+            {
+                retiredCells.push_back(cell);
             }
         }
 
-        std::swap(m_pCurrentStorage, m_pNextStorage);
+        for (auto& retiredCell : retiredCells)
+        {
+            m_storage.Remove(retiredCell);
+        }
+        
+        for (auto& changedCell : changedCells)
+        {
+            changedCell.State.Alive = !changedCell.State.Alive;
+
+            // 
+            // Update the alive state here, neighbor count below.
+            //
+            auto changedCellIt = m_storage.Find(changedCell.Address);
+            changedCellIt->second.State.Alive = changedCell.State.Alive;
+
+            if (!changedCell.State.Alive)
+            {
+                //
+                // Decrement neighbor cell NeighborCounts
+                //
+                for (const auto& Offset : NeighborOffsets)
+                {
+                    const auto NeighborAddress = changedCell.Address + Offset;
+                    auto neighborIt = m_storage.Find(NeighborAddress);
+
+                    //
+                    // A formerly living cell should have eight neighboring
+                    // cells in storage (not necessarily alive).
+                    //
+                    assert(neighborIt != m_storage.end());
+                    assert(neighborIt->second.State.NeighborCount > 0);
+                    neighborIt->second.State.NeighborCount--;
+                }
+            }
+            else if(changedCell.State.Alive)
+            {
+                //
+                // Increment neighbor cell NeighborCounts
+                //
+                for (const auto& Offset : NeighborOffsets)
+                {
+                    const auto NeighborAddress = changedCell.Address + Offset;
+                    auto neighborIt = m_storage.Find(NeighborAddress);
+                    if (neighborIt == m_storage.end())
+                    {
+                        //
+                        // Live cells must be surrounded.
+                        //
+                        const bool DeadCell{false};
+                        m_storage.Insert(NeighborAddress, DeadCell, 1);
+                    }
+                    else
+                    {
+                        assert(neighborIt->second.State.NeighborCount < 9);
+                        neighborIt->second.State.NeighborCount++;
+                    }
+                }
+            } 
+        }
     }
 
     std::vector<Cell> GOLGrid::GetLiveCells() const
     {
         std::vector<Cell> liveCells;
-        for (const auto& [Address, Cell] : *m_pCurrentStorage)
+        for (const auto& [IGNORE, Cell] : m_storage)
         {
             if (Cell.State.Alive) { liveCells.push_back(Cell); }
         }

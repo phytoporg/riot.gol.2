@@ -13,21 +13,23 @@ namespace gol
 
     struct Cell
     {
+        Cell() = default;
         Cell(const CellAddress& address, bool alive, uint8_t neighborCount)
             : Address(address), State{alive, neighborCount} {}
+        Cell(const Cell& other) = default;
 
         CellAddress Address;
 
-        //
-        // May be overkill. Packing these bits into place for an easy state
-        // transition look-up when advancing the generation.
-        //
         struct
         {
             uint8_t Alive;
             uint8_t NeighborCount;
         } State;
 
+        //
+        // May be overkill? Packing state bits into place for an easy state
+        // transition look-up when advancing the generation.
+        //
         uint8_t LookupKey() const
         {
             return ((State.Alive << 4) | (State.NeighborCount)) & 0x1F;

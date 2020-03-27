@@ -35,13 +35,7 @@ namespace gol
         //
         // The current state bounces back and forth between these two.
         //
-        CellStorage  m_pingPongStorage[2];
-
-        //
-        // Swapped on every generation.
-        //
-        CellStorage* m_pCurrentStorage;
-        CellStorage* m_pNextStorage;
+        CellStorage  m_storage;
     };
 }
 

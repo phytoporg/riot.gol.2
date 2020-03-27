@@ -9,7 +9,7 @@ namespace gol
 
     void CellStorage::Insert(const Cell& cell)
     {
-        m_map.insert(std::make_pair(cell.Address, cell));
+        m_map[cell.Address] = cell;
     }
 
     void CellStorage::Insert(
@@ -17,10 +17,12 @@ namespace gol
             bool isAlive,
             uint8_t numNeighbors)
     {
-        m_map.insert(
-            std::make_pair(
-                address,
-                Cell(address, isAlive, numNeighbors)));
+        Insert(Cell(address, isAlive, numNeighbors));
+    }
+
+    bool CellStorage::Remove(const Cell& cell)
+    {
+        return Remove(cell.Address);
     }
 
     bool CellStorage::Remove(const CellAddress& address)

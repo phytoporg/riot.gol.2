@@ -22,6 +22,7 @@ namespace gol
         //
         using ContainerType = std::map<CellAddress, Cell>;
         using iterator = ContainerType::iterator;
+        using const_iterator = ContainerType::const_iterator;
 
         //
         // Returns nullptr if no cell exists inside of this container which 
@@ -48,13 +49,16 @@ namespace gol
         //
         // Fails if no cell exists at the provided address.
         //
+        bool Remove(const Cell& cell);
         bool Remove(const CellAddress& address);
 
         //
         // Iterator convenience.
         //
         iterator begin() noexcept { return m_map.begin(); }
-        iterator end()   noexcept { return m_map.end(); }
+        iterator end()   noexcept { return m_map.end();   }
+        const_iterator begin() const noexcept { return m_map.cbegin(); }
+        const_iterator end()   const noexcept { return m_map.cend();   }
         
     private:
         ContainerType m_map;
