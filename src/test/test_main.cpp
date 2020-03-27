@@ -209,6 +209,51 @@ TEST_P(CellDeadToDeadFixture, CellDeadToDead_Param)
     }
 }
 
+TEST(MultiGenerationTests, BlinkerTest)
+{
+    using namespace gol;
+
+    const std::vector<CellAddress> BlinkerStates[] =
+    {
+        { CellAddress(-1, 0), CellAddress(0, 0), CellAddress(1,  0) },
+        { CellAddress( 0, 1), CellAddress(0, 0), CellAddress(0, -1) },
+    };
+
+    const size_t TotalGenerations{10};
+    GOLGrid grid(BlinkerStates[0]);
+    for (size_t i; i < TotalGenerations; ++i)
+    {
+        const auto LiveCells = grid.GetLiveCells();
+        for (const auto& searchCell : LiveCells)
+        {
+            auto it = std::find_if(
+                std::begin(BlinkerStates[i]),
+                std::end(BlinkerStates[i]),
+                [&searchCell](const CellAddress& cellAddress)
+                {
+                    return searchCell.Address == cellAddress;
+                });
+            
+            ASSERT_NE(it, std::end(BlinkerStates[i]));
+        }
+
+        for (const auto& searchAddr : BlinkerStates[i])
+        {
+            auto it = std::find_if(
+                std::begin(LiveCells),
+                std::end(LiveCells),
+                [&searchAddr](const Cell& cell)
+                {
+                    return cell.Address == searchAddr;
+                });
+            
+            ASSERT_NE(it, std::end(LiveCells));
+        }
+
+        grid.AdvanceGeneration();
+    }
+}
+
 INSTANTIATE_TEST_CASE_P(CellDeadToDead_Param,
                         CellDeadToDeadFixture,
                         // Dead cells stay dead when surrounded by this many 
