@@ -11,6 +11,8 @@
 #include <iostream>
 #include <memory>
 
+#include <bitset>
+
 #include <lib/Cell.h>
 #include <lib/GOLGrid.h>
 
@@ -34,9 +36,12 @@ void DumpCells(
 
         if (debug)
         {
-            out << " : " << (Cell.State.Alive ? "alive " : "dead ")
-                << "w/"  << static_cast<uint32_t>(Cell.State.NeighborCount)
-                << " neighbors";
+            std::bitset<5> a(Cell.LookupKey());
+            out << " : " << (Cell.Alive ? "alive " : "dead ")
+                << "w/"  << static_cast<uint32_t>(Cell.NeighborCount)
+                << " neighbors (0b"
+                << a
+                << ")";
         }
 
         if (&Cell != &cells.back())

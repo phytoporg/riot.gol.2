@@ -15,16 +15,12 @@ namespace gol
     {
         Cell() = default;
         Cell(const CellAddress& address, bool alive, uint8_t neighborCount)
-            : Address(address), State{alive, neighborCount} {}
+            : Address(address), Alive(alive), NeighborCount(neighborCount) {}
         Cell(const Cell& other) = default;
 
         CellAddress Address;
-
-        struct
-        {
-            uint8_t Alive;
-            uint8_t NeighborCount;
-        } State;
+        uint8_t     Alive;
+        uint8_t     NeighborCount;
 
         //
         // May be overkill? Packing state bits into place for an easy state
@@ -32,7 +28,7 @@ namespace gol
         //
         uint8_t LookupKey() const
         {
-            return ((State.Alive << 4) | (State.NeighborCount)) & 0x1F;
+            return ((Alive << 4) | (NeighborCount)) & 0x1F;
         };
     };
 }

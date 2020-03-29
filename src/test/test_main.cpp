@@ -77,8 +77,7 @@ TEST_P(CellAliveToDeadFixture, CellAliveToDead_Param)
 
     for (auto& liveCells : liveCellCollections)
     {
-        const gol::CellAddress CenterCellAddr{
-            std::make_pair<int64_t, int64_t>(0, 0)};
+        const gol::CellAddress CenterCellAddr(0, 0);
         liveCells.push_back(CenterCellAddr);
 
         gol::GOLGrid grid(liveCells);
@@ -104,9 +103,9 @@ INSTANTIATE_TEST_CASE_P(CellAliveToDead_Param,
                         testing::Values(0, 1, 4, 5, 6, 7, 8));
 
 //
-// Alive -> Dead tests for individual cells
+// Alive -> Alive tests for individual cells
 //
-class CellAliveToAliveFixture : public testing::TestWithParam<size_t> { };
+class CellAliveToAliveFixture : public testing::TestWithParam<size_t> {};
 
 TEST_P(CellAliveToAliveFixture, CellAliveToAlive_Param)
 {
@@ -115,8 +114,7 @@ TEST_P(CellAliveToAliveFixture, CellAliveToAlive_Param)
 
     for (auto& liveCells : liveCellCollections)
     {
-        const gol::CellAddress CenterCellAddr{
-            std::make_pair<int64_t, int64_t>(0, 0)};
+        const gol::CellAddress CenterCellAddr(0, 0);
         liveCells.push_back(CenterCellAddr);
 
         gol::GOLGrid grid(liveCells);
@@ -132,7 +130,7 @@ TEST_P(CellAliveToAliveFixture, CellAliveToAlive_Param)
                     return CenterCellAddr == cell.Address;
                 });
         ASSERT_NE(it, std::end(NextGenCells));
-        ASSERT_TRUE(it->State.Alive);
+        ASSERT_TRUE(it->Alive);
     }
 }
 
@@ -145,7 +143,7 @@ INSTANTIATE_TEST_CASE_P(CellAliveToAlive_Param,
 //
 // Dead -> Alive tests for individual cells
 //
-class CellDeadToAliveFixture : public testing::TestWithParam<size_t> { };
+class CellDeadToAliveFixture : public testing::TestWithParam<size_t> {};
 
 TEST_P(CellDeadToAliveFixture, CellDeadToAlive_Param)
 {
@@ -157,8 +155,7 @@ TEST_P(CellDeadToAliveFixture, CellDeadToAlive_Param)
         gol::GOLGrid grid(LiveCells);
         grid.AdvanceGeneration();
         
-        const gol::CellAddress CenterCellAddr{
-            std::make_pair<int64_t, int64_t>(0, 0)};
+        const gol::CellAddress CenterCellAddr(0, 0);
         const auto NextGenCells = grid.GetLiveCells();
         auto it = 
             std::find_if(
@@ -169,7 +166,7 @@ TEST_P(CellDeadToAliveFixture, CellDeadToAlive_Param)
                     return CenterCellAddr == cell.Address;
                 });
         ASSERT_NE(it, std::end(NextGenCells));
-        ASSERT_TRUE(it->State.Alive);
+        ASSERT_TRUE(it->Alive);
     }
 }
 
@@ -194,8 +191,7 @@ TEST_P(CellDeadToDeadFixture, CellDeadToDead_Param)
         gol::GOLGrid grid(liveCells);
         grid.AdvanceGeneration();
         
-        const gol::CellAddress CenterCellAddr{
-            std::make_pair<int64_t, int64_t>(0, 0)};
+        const gol::CellAddress CenterCellAddr(0, 0);
         const auto NextGenCells = grid.GetLiveCells();
         auto it = 
             std::find_if(
@@ -209,6 +205,15 @@ TEST_P(CellDeadToDeadFixture, CellDeadToDead_Param)
     }
 }
 
+INSTANTIATE_TEST_CASE_P(CellDeadToDead_Param,
+                        CellDeadToDeadFixture,
+                        // Dead cells stay dead when surrounded by this many 
+                        // neighbors
+                        testing::Values(1, 2, 4, 5, 6, 7, 8));
+
+//
+// Set up a blinker and ensure the state alternates across multiple generations.
+//
 TEST(MultiGenerationTests, BlinkerTest)
 {
     using namespace gol;
@@ -223,6 +228,10 @@ TEST(MultiGenerationTests, BlinkerTest)
     GOLGrid grid(BlinkerStates[0]);
     for (size_t i; i < TotalGenerations; ++i)
     {
+        //
+        // Assert that all live cells in the expected blinker state are alive
+        // in the grid and vice versa.
+        //
         const auto LiveCells = grid.GetLiveCells();
         for (const auto& searchCell : LiveCells)
         {
@@ -253,12 +262,6 @@ TEST(MultiGenerationTests, BlinkerTest)
         grid.AdvanceGeneration();
     }
 }
-
-INSTANTIATE_TEST_CASE_P(CellDeadToDead_Param,
-                        CellDeadToDeadFixture,
-                        // Dead cells stay dead when surrounded by this many 
-                        // neighbors
-                        testing::Values(1, 2, 4, 5, 6, 7, 8));
 
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);

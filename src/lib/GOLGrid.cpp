@@ -64,7 +64,7 @@ namespace gol
                 auto neighborCellIt = m_storage.Find(NeighborAddress);
                 if (neighborCellIt != m_storage.end())
                 {
-                    neighborCellIt->second.State.NeighborCount++;
+                    neighborCellIt->second.NeighborCount++;
                 }
                 else
                 {
@@ -81,7 +81,7 @@ namespace gol
                             });
                     if (it != std::end(deadCells))
                     {
-                        it->State.NeighborCount++;
+                        it->NeighborCount++;
                     }
                     else
                     {
@@ -106,7 +106,7 @@ namespace gol
     {
         //
         // A look-up table which encodes life-to-death states based on the 
-        // bit field contained in the State variable in a given cell.
+        // bit field contained in the state variables in a given cell.
         //
         // High order bit represents current alive state and the remaining
         // bits are the neighbor count.
@@ -159,12 +159,12 @@ namespace gol
         for (auto& [address, cell] : m_storage)
         {
             const bool NewState{ AliveOrDeadLUT[cell.LookupKey()] };
-            const bool Transitioned{ cell.State.Alive != NewState };
+            const bool Transitioned{ cell.Alive != NewState };
             if (Transitioned) 
             { 
                 changedCells.push_back(cell); 
             }
-            else if (!cell.State.Alive && cell.State.NeighborCount == 0)
+            else if (!cell.Alive && cell.NeighborCount == 0)
             {
                 retiredCells.push_back(cell);
             }
@@ -177,15 +177,15 @@ namespace gol
         
         for (auto& changedCell : changedCells)
         {
-            changedCell.State.Alive = !changedCell.State.Alive;
+            changedCell.Alive = !changedCell.Alive;
 
             // 
             // Update the alive state here, neighbor count below.
             //
             auto changedCellIt = m_storage.Find(changedCell.Address);
-            changedCellIt->second.State.Alive = changedCell.State.Alive;
+            changedCellIt->second.Alive = changedCell.Alive;
 
-            if (!changedCell.State.Alive)
+            if (!changedCell.Alive)
             {
                 //
                 // Decrement neighbor cell NeighborCounts
@@ -200,11 +200,11 @@ namespace gol
                     // cells in storage (not necessarily alive).
                     //
                     assert(neighborIt != m_storage.end());
-                    assert(neighborIt->second.State.NeighborCount > 0);
-                    neighborIt->second.State.NeighborCount--;
+                    assert(neighborIt->second.NeighborCount > 0);
+                    neighborIt->second.NeighborCount--;
                 }
             }
-            else if(changedCell.State.Alive)
+            else if(changedCell.Alive)
             {
                 //
                 // Increment neighbor cell NeighborCounts
@@ -223,8 +223,8 @@ namespace gol
                     }
                     else
                     {
-                        assert(neighborIt->second.State.NeighborCount < 9);
-                        neighborIt->second.State.NeighborCount++;
+                        assert(neighborIt->second.NeighborCount < 9);
+                        neighborIt->second.NeighborCount++;
                     }
                 }
             } 
@@ -236,7 +236,7 @@ namespace gol
         std::vector<Cell> liveCells;
         for (const auto& [IGNORE, Cell] : m_storage)
         {
-            if (Cell.State.Alive) { liveCells.push_back(Cell); }
+            if (Cell.Alive) { liveCells.push_back(Cell); }
         }
 
         return liveCells;
