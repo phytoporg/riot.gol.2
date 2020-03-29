@@ -152,11 +152,11 @@ namespace gol
         // 2) Update transitioning cells' living state and the neighbor count
         //    of their neighbors.
         //
-        // Along the way, kill off cells with no neighbors.
+        // Along the way, retire cells with no neighbors.
         //
         std::vector<Cell> changedCells;
         std::vector<Cell> retiredCells;
-        for (auto& [address, cell] : m_storage)
+        for (auto& [IGNORE, cell] : m_storage)
         {
             const bool NewState{ AliveOrDeadLUT[cell.LookupKey()] };
             const bool Transitioned{ cell.Alive != NewState };
