@@ -34,9 +34,9 @@ Here's the full break-down:
         └── test_main.cpp
 ```
 
-My goal with the overall approach to the problem was to try something different from [my last stab at this](https://github.com/phytoporg/riot.gol) and implement a few ideas loosely inspired by chapters 17 and 18 in [Michael Abrash's Graphics Programming Black Book](http://www.jagregory.com/abrash-black-book/). Chiefly: using a lookup table to drive cell state transitions, and only updating cells in each generation which require updating.
+My goal with the overall approach to the problem was to try something different from [my last stab at this](https://github.com/phytoporg/riot.gol) and implement a few ideas loosely inspired by chapters 17 and 18 in [Michael Abrash's Graphics Programming Black Book](http://www.jagregory.com/abrash-black-book/). Chiefly: using a lookup table to drive cell state transitions, and only visiting cells in each generation which require updating.
 
-The LUT creation and usage can be found in `GOLGrid`. Updating cells is done by only tracking live cells and any dead cells which may neighbor them. During each generation, dead and neighborless cells are retired from storage.
+The LUT creation and usage can be found in `GOLGrid`. Updating cells is done by visting live cells and any dead cells which may neighbor them. During each generation, dead and neighborless cells are retired from storage; cells which die or come to life propagate the appropriate changes to their neighbors.
 
 ## Test strategy
 
