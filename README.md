@@ -2,7 +2,41 @@
 
 <sub><sup>Though shhh I probably spent closer to four hours on this.</sup></sub>
 
-Detailed project description coming soon.
+## High level description
+
+The project is broken into three components: the main program (src/exe), the GOL library (src/lib) and the tests (src/test).
+
+The `inputs` directory contains the sample input file from the problem prompt, and `cmake` some cmake resources for retrieving external dependencies (in this case, dependenc*y*: GTest).
+
+Here's the full break-down:
+```
+.
+├── cmake
+│   └── FetchGTest.cmake
+├── CMakeLists.txt
+├── inputs
+│   └── sample.life
+├── README.md
+└── src
+    ├── CMakeLists.txt
+    ├── exe
+    │   ├── CMakeLists.txt
+    │   └── main.cpp
+    ├── lib
+    │   ├── Cell.h
+    │   ├── CellStorage.cpp
+    │   ├── CellStorage.h
+    │   ├── CMakeLists.txt
+    │   ├── GOLGrid.cpp
+    │   └── GOLGrid.h
+    └── test
+        ├── CMakeLists.txt
+        └── test_main.cpp
+```
+
+My goal with the overall approach to the problem was to try something different from [my last stab at this](https://github.com/phytoporg/riot.gol) and implement a few ideas loosely inspired by chapters 17 and 18 in [Michael Abrash's Graphics Programming Black Book](http://www.jagregory.com/abrash-black-book/). Chiefly: using a lookup table to drive cell state transitions, and only updating cells in each generation which require updating.
+
+The LUT creation and usage can be found in `GOLGrid`. Updating cells is done by only tracking live cells and any dead cells which may neighbor them. During each generation, dead and neighborless cells are retired from storage.
 
 ## Building
 
