@@ -38,6 +38,12 @@ My goal with the overall approach to the problem was to try something different 
 
 The LUT creation and usage can be found in `GOLGrid`. Updating cells is done by only tracking live cells and any dead cells which may neighbor them. During each generation, dead and neighborless cells are retired from storage.
 
+## Test strategy
+
+To keep things simple, my tests focused on validating the rules of the game for individual cells. To that end there are four suites of tests: Alive->Dead, Dead->Alive, Alive->Alive, Dead->Dead. In each suite, every combination of `n` live neighbors (where `n` live neighbors has the appropriately intended effect of killing, animating or doing nothing to the center cell).
+
+I had time to add another test to validate generational progression. A [blinker](https://www.conwaylife.com/wiki/Blinker) is created, and each generation validates the expected alternating state for the blinker.
+
 ## Building
 
 Grab yourself whichever flavor of [CMake](https://cmake.org/) suits your tastes, or more importantly, works on your respective platform.
