@@ -52,9 +52,9 @@ Grab yourself whichever flavor of [CMake](https://cmake.org/) suits your tastes,
 
 VS build tools will have to be in your path. Running this from the [VS developer prompt](https://docs.microsoft.com/en-us/dotnet/framework/tools/developer-command-prompt-for-vs) should give you the right environment.
 
-`mkdir build && cmake -H. -Bbuild -G "Visual Studio 16 2019" -A x64 && cmake --build .\build --config Release -j <num_cores>`
+`mkdir build && cmake -H. -Bbuild -G "Visual Studio 16 2019" -A x64 && cmake --build build --config Release -j <num_cores>`
 
-### Linux
+### Linux/OSX
 `mkdir build && cmake -H. -Bbuild && cmake --build ./build --config Release -j <num_cores>`
 
 ## Running Game of Life
@@ -62,6 +62,8 @@ VS build tools will have to be in your path. Running this from the [VS developer
 In its current state this project doesn't have an installation pass, so just run `gol2` directly from the build artifacts path with ordered parameters pointing to the life file and number of generations, respectively. For example:
 `./build/src/exe/gol2 ./inputs/sample.life 10`
 
+On Windows, the executable path will be at `.\build\src\exe\Release\gol2.exe` if you followed the build instructions above.
+
 ## Running tests
 
-`pushd ./build/src/test; ctest`
+`pushd ./build/src/test; ctest -C Release`
