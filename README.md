@@ -40,7 +40,7 @@ The LUT creation and usage can be found in `GOLGrid`. Updating cells is done by 
 
 ## Test strategy
 
-To keep things simple, my tests focused on validating the rules of the game for individual cells. To that end there are four suites of tests: Alive->Dead, Dead->Alive, Alive->Alive, Dead->Dead. In each suite, every combination of `n` live neighbors (where `n` live neighbors has the appropriately intended effect of killing, animating or doing nothing to the center cell).
+To keep things simple, my tests focused on validating the rules of the game for individual cells. To that end there are four suites of tests: Alive->Dead, Dead->Alive, Alive->Alive, Dead->Dead. In each suite, every combination of `n` live neighbors (where `n` live neighbors has the appropriately intended effect of killing, animating or doing nothing to the center cell) is created and advanced a generation and the expected change in the center cell is verified.
 
 I had time to add another test to validate generational progression. A [blinker](https://www.conwaylife.com/wiki/Blinker) is created, and each generation validates the expected alternating state for the blinker.
 
