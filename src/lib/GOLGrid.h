@@ -32,9 +32,6 @@ namespace gol
         std::vector<Cell> GetAllCells() const;
 
     private:
-        //
-        // The current state bounces back and forth between these two.
-        //
         CellStorage  m_storage;
     };
 }
