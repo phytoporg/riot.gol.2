@@ -24,14 +24,14 @@ namespace
         //
         // Neighbor offsets in clockwise order from the upper-left corner.
         //
-        std::make_pair<int64_t, int64_t>(-1, -1),
-        std::make_pair<int64_t, int64_t>( 0, -1),
-        std::make_pair<int64_t, int64_t>( 1, -1),
-        std::make_pair<int64_t, int64_t>( 1,  0),
-        std::make_pair<int64_t, int64_t>( 1,  1),
-        std::make_pair<int64_t, int64_t>( 0,  1),
-        std::make_pair<int64_t, int64_t>(-1,  1),
-        std::make_pair<int64_t, int64_t>(-1,  0)
+        {-1, -1},
+        { 0, -1},
+        { 1, -1},
+        { 1,  0},
+        { 1,  1},
+        { 0,  1},
+        {-1,  1},
+        {-1,  0}
     };
 }
 
@@ -113,6 +113,9 @@ namespace gol
         //
         static const std::vector<bool> AliveOrDeadLUT = 
         {
+            //
+            // Dead cells
+            //
             false, // 0b00000
             false, // 0b00001
             false, // 0b00010
@@ -135,6 +138,9 @@ namespace gol
             false, // 0b01110
             false, // 0b01111
 
+            //
+            // Live cells
+            //
             false, // 0b10000
             false, // 0b10001
             true , // 0b10010

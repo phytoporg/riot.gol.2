@@ -9,14 +9,14 @@
 // Clockwise neighbor addresses.
 //
 const static std::vector<gol::CellAddress> NeighborAddresses = {
-    std::make_pair<int64_t, int64_t>(-1, -1),
-    std::make_pair<int64_t, int64_t>( 0, -1),
-    std::make_pair<int64_t, int64_t>( 1, -1),
-    std::make_pair<int64_t, int64_t>( 1,  0),
-    std::make_pair<int64_t, int64_t>( 1,  1),
-    std::make_pair<int64_t, int64_t>( 0,  1),
-    std::make_pair<int64_t, int64_t>(-1,  1),
-    std::make_pair<int64_t, int64_t>(-1,  0)
+    {-1, -1},
+    { 0, -1},
+    { 1, -1},
+    { 1,  0},
+    { 1,  1},
+    { 0,  1},
+    {-1,  1},
+    {-1,  0}
 };
 
 static 
